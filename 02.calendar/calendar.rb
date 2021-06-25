@@ -23,7 +23,7 @@ puts "#{month}月 #{year}".center(18)
 
 date_begin = Date.new(year, month, 1)
 date_end = Date.new(year, month, -1)
-today_day = Date.today
+p today_day = Date.today
 
 # 曜日の取得
 days_week = ["日", "月", "火", "水", "木", "金", "土"]
@@ -32,14 +32,15 @@ puts days_week.join(" ")
 # 日付の取得
 (date_begin.wday * 3).times { print " " }
 (date_begin..date_end).each do |date|
+  if date == today_day
+    print "\e[30m\e[47m#{date.day}\e[0m" + " "
+  end
   case
+  when date == today_day
+    next
   when date.saturday? || date == date_end
     print "#{date.day.to_s.rjust(2)}" + "\n"
-  when date.day < 10
-    print "#{date.day.to_s.rjust(2)}" + " "
-  when date.day == today_day.day
-    print "\e[30m\e[47m#{date.day}\e[0m" + " "
   else
-    print "#{date.day}" + " "
+    print "#{date.day.to_s.rjust(2)}" + " "
   end
 end
