@@ -23,7 +23,7 @@ puts "#{month}月 #{year}".center(18)
 
 date_begin = Date.new(year, month, 1)
 date_end = Date.new(year, month, -1)
-p today_day = Date.today
+today_day = Date.today
 
 # 曜日の取得
 days_week = ["日", "月", "火", "水", "木", "金", "土"]
@@ -32,9 +32,13 @@ puts days_week.join(" ")
 # 日付の取得
 (date_begin.wday * 3).times { print " " }
 (date_begin..date_end).each do |date|
-  if date == today_day
+  # 本日日付のハイライト表示
+  if date == today_day && date.day < 10
+    print " " + "\e[30m\e[47m#{date.day}\e[0m" + " "
+  elsif date == today_day && date.day >= 10
     print "\e[30m\e[47m#{date.day}\e[0m" + " "
   end
+  # その他の日付表示
   case
   when date == today_day
     next
