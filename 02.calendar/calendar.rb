@@ -32,19 +32,15 @@ puts days_week.join(" ")
 # 日付の取得
 (date_begin.wday * 3).times { print " " }
 (date_begin..date_end).each do |date|
-  # 本日日付のハイライト表示
-  if date == today_day && date.day < 10
-    print " " + "\e[30m\e[47m#{date.day}\e[0m" + " "
-  elsif date == today_day && date.day >= 10
-    print "\e[30m\e[47m#{date.day}\e[0m" + " "
-  end
-  # その他の日付表示
   case
-  when date == today_day
-    next
-  when date.saturday? || date == date_end
-    print "#{date.day.to_s.rjust(2)}" + "\n"
+  when date == today_day && date.day < 10
+      print " " + "\e[30m\e[47m#{today_day.day}\e[0m" + " "
+  when date == today_day && date.day >= 10
+      print "\e[30m\e[47m#{today_day.day}\e[0m" + " "
   else
-    print "#{date.day.to_s.rjust(2)}" + " "
+    print "#{date.day.to_s.rjust(2)}"+ " "
+  end
+  if date.saturday? || date == date_end
+    print "\n"
   end
 end
