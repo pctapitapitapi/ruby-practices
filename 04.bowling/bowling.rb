@@ -17,27 +17,20 @@ end
 
 frames = []
 shots.each_slice(2) do |s|
-  frames << if s == [10, 0]
-              [s.shift]
-            else
-              s
-            end
+  frames << (s == [10, 0] ? [s.shift] : s)
 end
 
 point = 0
 # 1~9投目までの合計
 frames[0..8].each_with_index do |frame, i|
-  if frame[0] == 10 # ストライクの時
-    point += if frames[i + 1][0] != 10 # ストライクが続かなかった時
-               10 + frames[i + 1][0] + frames[i + 1][1]
-             else # ストライクが続いた時
-               20 + frames[i + 2][0]
-             end
-  elsif frame.sum == 10 # スペアの時
-    point += 10 + frames[i + 1][0] # 次の1投を加算
-  else
-    point += frame.sum
-  end
+  point += if frame[0] == 10 # ストライクの時
+             # ストライクが続いた時
+             (frames[i + 1][0] != 10 ? 10 + frames[i + 1][0] + frames[i + 1][1] : 20 + frames[i + 2][0])
+           elsif frame.sum == 10 # スペアの時
+             10 + frames[i + 1][0] # 次の1投を加算
+           else
+             frame.sum
+           end
 end
 
 # 10投目以降を一つの要素にする
