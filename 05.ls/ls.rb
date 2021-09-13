@@ -91,7 +91,7 @@ end
 
 def add_file_type(all_files)
   all_files.each do |file|
-    case file
+    case File.ftype(file)
     when 'file'
       print '-'
     when 'directory'
