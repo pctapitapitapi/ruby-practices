@@ -13,10 +13,7 @@ def main
 
   all_files = params[:a] ? Dir.glob('*', File::FNM_DOTMATCH).sort : Dir.glob('*').sort
 
-  if params.empty?
-    show_list(all_files)
-    return
-  end
+  return show_list(all_files) if params.empty?
 
   all_files = reverse_all_files(all_files) if params[:r]
 
@@ -39,16 +36,7 @@ def show_list(all_files)
   max_length_array = built_max_length_array(sliced_files)
   max_length = max_length_array.max
 
-  sliced_files.transpose.each do |files_element|
-    file_names = []
-    files_element.each do |file_element|
-      lack_of_space = max_length - file_element.length
-      file_name = file_element.ljust(lack_of_space + file_element.length, ' ')
-      file_names << file_name
-    end
-    print file_names.join(' ')
-    puts
-  end
+  show_list_per_line(sliced_files, max_length)
 end
 
 def built_row_size(all_files)
@@ -69,11 +57,38 @@ def built_max_length_array(sliced_files)
   max_length_array
 end
 
+def show_list_per_line(sliced_files, max_length)
+  sliced_files.transpose.each do |files_element|
+    file_names = []
+    files_element.each do |file_element|
+      lack_of_space = max_length - file_element.length
+      file_name = file_element.ljust(lack_of_space + file_element.length, ' ')
+      file_names << file_name
+    end
+    print file_names.join(' ')
+    puts
+  end
+end
+
 def show_detailed_list(all_files)
   total = built_total(all_files)
   puts "total #{total}"
-  detailed_list = {}
+
+  show_detailed_list_per_line(all_files)
+end
+
+def built_total(all_files)
+  total = 0
   all_files.each do |file|
+    file = File::Stat.new(file)
+    total += file.blocks
+  end
+  total
+end
+
+def show_detailed_list_per_line(all_files)
+  all_files.each do |file|
+    detailed_list = {}
     detailed_list[:file_type] = add_file_type(file)
     detailed_list[:permission] = add_permission(file)
     detailed_list[:hard_link] = add_hard_link(file)
@@ -86,15 +101,6 @@ def show_detailed_list(all_files)
     end
     puts
   end
-end
-
-def built_total(all_files)
-  total = 0
-  all_files.each do |file|
-    file = File::Stat.new(file)
-    total += file.blocks
-  end
-  total
 end
 
 def add_file_type(file)
