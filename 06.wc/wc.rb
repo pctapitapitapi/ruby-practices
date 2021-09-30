@@ -7,9 +7,9 @@ def main
   params = {}
   opt.on('-l') { |v| params[:l] = v }
   opt.parse!(ARGV)
-  file_name_array = ARGV
+  file_names = ARGV
 
-  if file_name_array.length.zero?
+  if file_names.length.zero?
     inputted_lines = $stdin.readlines
     inputted_lines_total = built_total(inputted_lines)
     show_inputted_lines_total(inputted_lines_total)
@@ -17,7 +17,7 @@ def main
   end
 
   final_total = { lines: 0, words: 0, letters: 0 }
-  file_name_array.each do |file_name|
+  file_names.each do |file_name|
     reading_contents = File.readlines(file_name)
 
     if params[:l]
@@ -31,7 +31,7 @@ def main
     add_total(reading_contents_total, final_total)
   end
 
-  return unless file_name_array.size > 1
+  return if file_names.size == 1
 
   show_final_total(final_total)
 end
