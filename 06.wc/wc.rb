@@ -3,37 +3,53 @@
 require 'optparse'
 
 def main
-  opt = OptionParser.new
-  params = {}
-  opt.on('-l') { |v| params[:l] = v }
-  opt.parse!(ARGV)
-  file_names = ARGV
-
-  if file_names.length.zero?
-    inputted_lines = $stdin.readlines
-    inputted_lines_total = built_total(inputted_lines)
-    show_inputted_lines_total(inputted_lines_total)
-    return
-  end
+  parsed_input = parse_input(ARGV)
 
   final_total = { lines: 0, words: 0, letters: 0 }
-  file_names.each do |file_name|
-    reading_contents = File.readlines(file_name)
-
-    if params[:l]
-      show_only_lines(reading_contents)
-      break
+  if parsed_input[:options][:l]
+    parsed_input[:files].each do |file|
+      show_only_lines(file[:content])
     end
-
-    reading_contents_total = built_total(reading_contents)
-    show_reading_contents_total(reading_contents_total, file_name)
-
-    add_total(reading_contents_total, final_total)
+  else
+    parsed_input[:files].each do |file|
+      reading_contents_total = built_total(file[:content])
+      show_reading_contents_total(reading_contents_total, file[:name])
+      add_total(reading_contents_total, final_total)
+    end
   end
 
-  return if file_names.size == 1
+  return if parsed_input[:files].size == 1
 
   show_final_total(final_total)
+end
+
+def parse_input(argv)
+  opt = OptionParser.new
+  options = {}
+  opt.on('-l') { |v| options[:l] = v }
+  opt.parse!(argv)
+
+  files = built_files(argv)
+  {
+    options: options,
+    files: files
+  }
+end
+
+def built_files(argv)
+  if argv.empty?
+    [{
+      name: '',
+      content: $stdin.readlines
+    }]
+  else
+    argv.map do |file_name|
+      {
+        name: file_name,
+        content: File.readlines(file_name)
+      }
+    end
+  end
 end
 
 def show_only_lines(reading_contents)
