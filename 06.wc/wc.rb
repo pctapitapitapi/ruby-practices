@@ -6,16 +6,14 @@ def main
   parsed_input = parse_input(ARGV)
 
   final_total = { lines: 0, words: 0, letters: 0 }
-  if parsed_input[:options][:l]
-    parsed_input[:files].each do |file|
+  parsed_input[:files].each do |file|
+    if parsed_input[:options][:l]
       show_only_lines(file[:content])
+      break
     end
-  else
-    parsed_input[:files].each do |file|
-      reading_contents_total = built_total(file[:content])
-      show_reading_contents_total(reading_contents_total, file[:name])
-      add_total(reading_contents_total, final_total)
-    end
+    reading_contents_total = built_total(file[:content])
+    show_reading_contents_total(reading_contents_total, file[:name])
+    add_total(reading_contents_total, final_total)
   end
 
   return if parsed_input[:files].size == 1
@@ -29,10 +27,9 @@ def parse_input(argv)
   opt.on('-l') { |v| options[:l] = v }
   opt.parse!(argv)
 
-  files = built_files(argv)
   {
     options: options,
-    files: files
+    files: built_files(argv)
   }
 end
 
